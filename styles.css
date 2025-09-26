@@ -1160,3 +1160,19 @@ select:focus {
         background: #fff;
     }
 }
+
+
+/* Estado de error en campos de formulario */
+.contact-form .error {
+  border-color: #ff4444 !important;
+  background: rgba(255, 68, 68, 0.05);
+}
+.contact-form .field-error {
+  color: #ff4444;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+.scroll-top-btn:focus {
+  outline: 2px solid #00C851;
+  outline-offset: 2px;
+}
