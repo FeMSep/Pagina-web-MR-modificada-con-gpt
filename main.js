@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     console.log('Maulen Riders website loaded successfully! 🚴‍♂️');
-});
+
     
     // ========================================
     // SCROLL ANIMATIONS
