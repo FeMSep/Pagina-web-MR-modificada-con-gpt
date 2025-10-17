@@ -676,7 +676,18 @@ p {
     font-weight: 600;
     color: var(--text-dark);
 }
-
+/* Nuevo estilo para la imagen del sponsor para control de tamaño */
+.sponsor-placeholder .sponsor-image {
+    /* Define el tamaño de la imagen */
+    width: 120px;       /* Ajusta este valor (e.g., 80px, 150px) para el tamaño deseado */
+    height: auto;       /* Mantiene la proporción original de la imagen */
+    
+    /* Asegura que la imagen sea un elemento de bloque para poder centrarla y manejar el margen */
+    display: block;
+    
+    /* Centra la imagen horizontalmente */
+    margin: 0 auto 1rem; 
+}
 
 /* Gallery Section */
 .gallery-tabs {
