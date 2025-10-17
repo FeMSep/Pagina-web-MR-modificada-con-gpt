@@ -160,6 +160,19 @@ p {
     color: var(--white);
 }
 
+/* Estilos para el logo dentro del nav-container */
+.nav-logo .logo-image {
+    /* Establece el fondo a color blanco */
+    background-color: white; 
+    
+    /* Opcional: Esto añade un pequeño espacio entre el borde de la imagen y el inicio del fondo blanco */
+    /* Te ayudará si el logo está muy pegado al borde del PNG */
+    padding: 2px; 
+    
+    /* Opcional: Esto redondeará las esquinas del fondo blanco, si lo deseas */
+    /* border-radius: 5px; */ 
+}
+
 .nav-logo i {
     color: var(--primary-green);
     font-size: 1.8rem;
