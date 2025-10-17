@@ -665,6 +665,7 @@ p {
     text-align: center;
 }
 
+/* ELIMINA o COMENTA este bloque si ya no usas el ícono <i> dentro de sponsor-placeholder */
 .sponsor-placeholder i {
     font-size: 2rem;
     color: var(--primary-green);
