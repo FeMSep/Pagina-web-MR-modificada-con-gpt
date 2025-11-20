@@ -107,41 +107,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
     // CONTACT FORM HANDLING
     // ========================================
-// Código para manejar el formulario de contacto de Formspree
-document.addEventListener("DOMContentLoaded", function() {
-    var form = document.getElementById("contactForm");
+// ... (código anterior donde capturas los datos) ...
     
-    async function handleSubmit(event) {
-        event.preventDefault();
-        var status = document.getElementById("formStatus");
-        var data = new FormData(event.target);
-
-        fetch(event.target.action, {
-            method: form.method,
-            body: data,
-            headers: {
-                'Accept': 'application/json'
-            }
-        }).then(response => {
-            if (response.ok) {
-                status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado correctamente.";
-                status.style.color = "green"; // Opcional: estilo de éxito
-                form.reset();
-            } else {
-                response.json().then(data => {
-                    if (Object.hasOwn(data, 'errors')) {
-                        status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-                    } else {
-                        status.innerHTML = "Oops! Hubo un problema al enviar el formulario";
-                        status.style.color = "red"; // Opcional: estilo de error
-                    }
-                })
-            }
-        }).catch(error => {
-            status.innerHTML = "Oops! Hubo un problema al enviar el formulario";
-            status.style.color = "red";
-        });
-    }
+    var status = document.getElementById("formStatus");
+    
+    // ESTA ES LA PARTE QUE FALTA: Enviar a Formspree
+    fetch("https://formspree.io/f/myznyqbj", {
+        method: "POST",
+        body: formData, // Asegúrate que tu variable se llame formData o data (según lo que tengas arriba)
+        headers: {
+            'Accept': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado exitosamente.";
+            status.style.color = "#4CAF50"; // Verde
+            form.reset(); // Limpia el formulario
+        } else {
+            response.json().then(data => {
+                if (Object.hasOwn(data, 'errors')) {
+                    status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
+                } else {
+                    status.innerHTML = "Hubo un error al enviar. Intenta nuevamente.";
+                    status.style.color = "red";
+                }
+            });
+        }
+    }).catch(error => {
+        status.innerHTML = "Error de conexión. Verifica tu internet.";
+        status.style.color = "red";
+    });
 
     if(form) {
         form.addEventListener("submit", handleSubmit);
