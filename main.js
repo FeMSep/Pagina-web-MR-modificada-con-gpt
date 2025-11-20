@@ -109,40 +109,62 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
 // ... (código anterior donde capturas los datos) ...
     
-    var status = document.getElementById("formStatus");
-    
-    // ESTA ES LA PARTE QUE FALTA: Enviar a Formspree
-    fetch("https://formspree.io/f/myznyqbj", {
-        method: "POST",
-        body: formData, // Asegúrate que tu variable se llame formData o data (según lo que tengas arriba)
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then(response => {
-        if (response.ok) {
-            status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado exitosamente.";
-            status.style.color = "#4CAF50"; // Verde
-            form.reset(); // Limpia el formulario
-        } else {
-            response.json().then(data => {
-                if (Object.hasOwn(data, 'errors')) {
-                    status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-                } else {
-                    status.innerHTML = "Hubo un error al enviar. Intenta nuevamente.";
-                    status.style.color = "red";
-                }
-            });
-        }
-    }).catch(error => {
-        status.innerHTML = "Error de conexión. Verifica tu internet.";
-        status.style.color = "red";
-    });
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Paso 0: El script ha cargado correctamente.");
 
-    if(form) {
-        form.addEventListener("submit", handleSubmit);
-    }
-});
+    var form = document.getElementById("contactForm");
     
+    // Verificación de seguridad: ¿Existe el formulario?
+    if (!form) {
+        console.error("ERROR CRÍTICO: No encuentro un formulario con id='contactForm' en el HTML.");
+        return;
+    }
+
+    form.addEventListener("submit", function(event) {
+        // 1. Detenemos el comportamiento normal (recarga de página)
+        event.preventDefault();
+        console.log("Paso 1: Botón presionado. Recarga detenida.");
+
+        var status = document.getElementById("formStatus");
+        status.innerHTML = "Enviando...";
+        status.style.color = "blue";
+
+        // 2. Preparamos los datos
+        var formData = new FormData(form);
+        console.log("Paso 2: Datos capturados.", Object.fromEntries(formData));
+
+        // 3. Enviamos a Formspree
+        fetch("https://formspree.io/f/myznyqbj", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            console.log("Paso 3: Respuesta recibida del servidor.");
+            if (response.ok) {
+                status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado.";
+                status.style.color = "green";
+                form.reset(); // Limpiamos los campos
+                console.log("ÉXITO TOTAL");
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
+                    } else {
+                        status.innerHTML = "Hubo un problema al enviar.";
+                    }
+                    status.style.color = "red";
+                    console.error("Error del servidor:", data);
+                });
+            }
+        }).catch(error => {
+            status.innerHTML = "Error de conexión. Intenta de nuevo.";
+            status.style.color = "red";
+            console.error("Error de red:", error);
+        });
+    });
+});
     // ========================================
     // SCROLL ANIMATIONS
     // ========================================
