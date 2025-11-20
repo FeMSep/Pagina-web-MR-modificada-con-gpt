@@ -108,46 +108,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // CONTACT FORM HANDLING
     // ========================================
     
-// Código para manejar el formulario de contacto de Formspree
-document.addEventListener("DOMContentLoaded", function() {
-    var form = document.getElementById("contactForm");
-    
-    async function handleSubmit(event) {
-        event.preventDefault();
-        var status = document.getElementById("formStatus");
-        var data = new FormData(event.target);
+// CONTACT FORM HANDLING
+// ========================================
+const contactForm = document.getElementById('contactForm');
 
-        fetch(event.target.action, {
-            method: form.method,
-            body: data,
-            headers: {
-                'Accept': 'application/json'
-            }
-        }).then(response => {
-            if (response.ok) {
-                status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado correctamente.";
-                status.style.color = "green"; // Opcional: estilo de éxito
-                form.reset();
-            } else {
-                response.json().then(data => {
-                    if (Object.hasOwn(data, 'errors')) {
-                        status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-                    } else {
-                        status.innerHTML = "Oops! Hubo un problema al enviar el formulario";
-                        status.style.color = "red"; // Opcional: estilo de error
-                    }
-                })
-            }
-        }).catch(error => {
-            status.innerHTML = "Oops! Hubo un problema al enviar el formulario";
-            status.style.color = "red";
-        });
-    }
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        // Validación mínima: solo verificar que no estén vacíos
+        const name = contactForm.querySelector('#name');
+        const email = contactForm.querySelector('#email');
+        const subject = contactForm.querySelector('#subject');
+        const message = contactForm.querySelector('#message');
 
-    if(form) {
-        form.addEventListener("submit", handleSubmit);
-    }
-});
+        if (!name.value || !email.value || !subject.value || !message.value) {
+            e.preventDefault();
+            alert('Por favor completa todos los campos.');
+            return;
+        }
+
+        // Si todo está bien, se envía normal a Formspree
+    });
+}
 
 
     
