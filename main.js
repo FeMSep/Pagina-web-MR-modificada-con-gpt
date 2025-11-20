@@ -109,29 +109,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
     
     const contactForm = document.getElementById('contactForm');
-    
-   // Enhanced form submission validation
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            
-            let isFormValid = true;
-            
-            // Validate all fields
-            formInputs.forEach(field => {
-                if (!validateField(field)) {
-                    isFormValid = false;
-                }
-            });
-            
-            if (!isFormValid) {
-                e.preventDefault(); // Detiene el envío si hay errores
-                showNotification('Por favor, corrige los errores en el formulario.', 'error');
-            }
-        });
-    }
-    
-    console.log('Maulen Riders website loaded successfully! 🚴‍♂️');
 
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        // Validación mínima: solo verificar que no estén vacíos
+        const name = contactForm.querySelector('#name');
+        const email = contactForm.querySelector('#email');
+        const subject = contactForm.querySelector('#subject');
+        const message = contactForm.querySelector('#message');
+
+        if (!name.value || !email.value || !subject.value || !message.value) {
+            e.preventDefault();
+            alert('Por favor completa todos los campos.');
+            return;
+        }
+
+        // Si todo está bien, se envía normal a Formspree
+    });
+}
     
     // ========================================
     // SCROLL ANIMATIONS
