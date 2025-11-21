@@ -634,60 +634,86 @@ p {
     margin-bottom: 2rem;
 }
 
+/* CONTENEDOR GENERAL */
 .sponsors {
     text-align: center;
+    padding: 3rem 1rem;
 }
 
 .sponsors h3 {
     color: var(--white);
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
+/* GRID RESPONSIVO Y CENTRADO */
 .sponsors-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 2.2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
+/* TARJETAS DE LOGOS */
 .sponsor-logo {
     background: var(--white);
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
+    padding: 2.2rem 1.8rem;
+    border-radius: calc(var(--border-radius) * 1.5);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+
+    /* transición más suave */
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* EFECTO HOVER MÁS MODERNO Y ELEGANTE */
 .sponsor-logo:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px var(--shadow-dark);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
 }
 
+/* CONTENIDO CENTRADO */
 .sponsor-placeholder {
     text-align: center;
 }
 
-/* ELIMINA o COMENTA este bloque si ya no usas el ícono <i> dentro de sponsor-placeholder */
+/* ICONOS (si se usan) */
 .sponsor-placeholder i {
     font-size: 2rem;
     color: var(--primary-green);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
     display: block;
 }
 
+/* TEXTO BAJO EL LOGO */
 .sponsor-placeholder span {
     font-weight: 600;
+    font-size: 1rem;
     color: var(--text-dark);
-}
-/* Nuevo estilo para la imagen del sponsor para control de tamaño */
-.sponsor-placeholder .sponsor-image {
-    /* Define el tamaño de la imagen */
-    width: 120px;       /* Ajusta este valor (e.g., 80px, 150px) para el tamaño deseado */
-    height: auto;       /* Mantiene la proporción original de la imagen */
-    
-    /* Asegura que la imagen sea un elemento de bloque para poder centrarla y manejar el margen */
     display: block;
+    margin-top: 0.6rem;
+}
+
+/* IMÁGENES DE LOGO — MÁS PROPORCIONALES Y LIMPIAS */
+.sponsor-placeholder .sponsor-image {
+    width: 160px;           /* más grande y mejor equilibrado */
+    height: auto;
     
-    /* Centra la imagen horizontalmente */
-    margin: 0 auto 1rem; 
+    display: block;
+    margin: 0 auto;
+
+    /* Que no se pixelen ni deformen */
+    object-fit: contain;
+
+    /* Suavidad del renderizado */
+    image-rendering: -webkit-optimize-contrast;
+}
+
+/* OPCIONAL — si las imágenes no respetan su tamaño */
+.sponsor-logo img {
+    max-height: 120px;
 }
 
 /* Gallery Section */
