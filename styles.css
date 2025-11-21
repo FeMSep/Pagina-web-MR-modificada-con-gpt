@@ -635,66 +635,98 @@ p {
 }
 
 /* CONTENEDOR GENERAL */
+/* -------------------------
+   Sponsors — FIX definitivo
+   ------------------------- */
+
 .sponsors {
-    text-align: center;
+  text-align: center;
+  padding: 40px 0;
 }
 
 .sponsors h3 {
-    color: var(--white);
-    margin-bottom: 2rem;
+  color: var(--white, #fff);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-/* GRID */
+/* grid flexible y centrado */
 .sponsors-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px;
 }
 
-/* TARJETA FIJA (clave para solucionar el problema) */
+/* tarjeta contenedora (fijamos tamaño para que no se rompa) */
+.sponsor-card,
 .sponsor-logo {
-    background: var(--white);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-
-    /* 🔥 Esto evita que las imágenes gigantes rompan el layout */
-    width: 100%;
-    height: 180px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg, #ffffff);
+  border-radius: calc(var(--border-radius, 8px));
+  padding: 16px;
+  width: 180px;           /* ancho fijo máximo por tarjeta */
+  height: 170px;          /* altura fija para alinear todas las tarjetas */
+  box-sizing: border-box;
+  overflow: hidden;       /* evita overflow si imagen grande */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* EFECTO HOVER */
+.sponsor-card:hover,
 .sponsor-logo:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px var(--shadow-dark);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
 }
 
-/* IMAGENES CONTROLADAS */
-.sponsor-logo img {
-    max-width: 120px !important;   /* límite horizontal */
-    max-height: 100px !important;  /* límite vertical */
-    width: auto !important;
-    height: auto !important;
-
-    object-fit: contain;
-
-    display: block;
-    margin: 0 auto;
+/* Regla con alta prioridad para todas las imágenes de sponsors.
+   Se aplica si tu HTML usa class="sponsor-img" o simplemente <img> dentro .sponsor-card */
+.sponsor-card img,
+.sponsor-logo img,
+.sponsor-img {
+  max-width: 140px !important;   /* el ancho no puede pasar de aquí */
+  max-height: 110px !important;  /* la altura tampoco */
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block;
+  margin: 0 auto;
+  image-rendering: -webkit-optimize-contrast;
 }
 
-/* TEXTO */
+/* texto debajo del logo */
+.sponsor-card p,
+.sponsor-logo p,
+.sponsor-card span,
 .sponsor-logo span {
-    margin-top: 0.6rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-dark);
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--text-dark, #333);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* responsive: si la pantalla es pequeña, reducir ancho de las tarjetas */
+@media (max-width: 480px) {
+  .sponsor-card,
+  .sponsor-logo {
+    width: 140px;
+    height: 140px;
+    padding: 12px;
+  }
+
+  .sponsor-card img,
+  .sponsor-logo img,
+  .sponsor-img {
+    max-width: 110px !important;
+    max-height: 84px !important;
+  }
 }
 
 
