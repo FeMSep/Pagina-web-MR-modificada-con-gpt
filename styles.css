@@ -711,10 +711,18 @@ p {
     image-rendering: -webkit-optimize-contrast;
 }
 
-/* OPCIONAL — si las imágenes no respetan su tamaño */
+.sponsor-placeholder img,
 .sponsor-logo img {
-    max-height: 120px;
+    max-width: 150px;       /* límite estricto del ancho */
+    max-height: 120px;      /* evita que se salgan hacia abajo */
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
 }
+
 
 /* Gallery Section */
 .gallery-tabs {
