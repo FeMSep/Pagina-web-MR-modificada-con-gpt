@@ -1,5 +1,5 @@
 // ========================================
-//   MAULEN RIDERS - MAIN JAVASCRIPT
+//   MAULEN RIDERS - MAIN JAVASCRIPT (CORREGIDO)
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -14,16 +14,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link');
     
     // Mobile menu toggle
-    hamburger.addEventListener('click', function() {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+    if(hamburger) {
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
     
     // Close mobile menu when clicking nav links
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            if(hamburger) hamburger.classList.remove('active');
+            if(navMenu) navMenu.classList.remove('active');
         });
     });
     
@@ -103,68 +105,209 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // ========================================
-    // CONTACT FORM HANDLING
-    // ========================================
-// ... (código anterior donde capturas los datos) ...
-    
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("Paso 0: El script ha cargado correctamente.");
 
-    var form = document.getElementById("contactForm");
+    // ========================================
+    // NOTIFICATION SYSTEM (Defined early for use in form)
+    // ========================================
     
-    // Verificación de seguridad: ¿Existe el formulario?
-    if (!form) {
-        console.error("ERROR CRÍTICO: No encuentro un formulario con id='contactForm' en el HTML.");
-        return;
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+                <button class="notification-close">&times;</button>
+            </div>
+        `;
+        
+        // Add styles (inline for simplicity based on your code)
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? '#00C851' : type === 'error' ? '#ff4444' : '#007bff'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 400px;
+        `;
+        
+        const content = notification.querySelector('.notification-content');
+        content.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+        
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.style.cssText = 'background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-left: auto;';
+        
+        // Add to DOM
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Close functionality
+        closeBtn.addEventListener('click', () => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => notification.remove(), 300);
+        });
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 5000);
+    }
+    
+    function getNotificationIcon(type) {
+        switch (type) {
+            case 'success': return 'fa-check-circle';
+            case 'error': return 'fa-exclamation-circle';
+            default: return 'fa-info-circle';
+        }
     }
 
-    form.addEventListener("submit", function(event) {
-        // 1. Detenemos el comportamiento normal (recarga de página)
-        event.preventDefault();
-        console.log("Paso 1: Botón presionado. Recarga detenida.");
-
-        var status = document.getElementById("formStatus");
-        status.innerHTML = "Enviando...";
-        status.style.color = "blue";
-
-        // 2. Preparamos los datos
-        var formData = new FormData(form);
-        console.log("Paso 2: Datos capturados.", Object.fromEntries(formData));
-
-        // 3. Enviamos a Formspree
-        fetch("https://formspree.io/f/myznyqbj", {
-            method: "POST",
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
+    // ========================================
+    // FORM VALIDATION & FORMSPREE HANDLING (UNIFIED)
+    // ========================================
+    
+    const contactForm = document.getElementById("contactForm");
+    const formInputs = document.querySelectorAll('.contact-form input, .contact-form textarea, .contact-form select');
+    
+    // Validation helper functions
+    function validateField(field) {
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Check required fields
+        if (field.hasAttribute('required') && !value) {
+            isValid = false;
+            errorMessage = 'Este campo es obligatorio';
+        }
+        
+        // Email validation
+        if (field.type === 'email' && value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                isValid = false;
+                errorMessage = 'Ingrese un email válido';
             }
-        }).then(response => {
-            console.log("Paso 3: Respuesta recibida del servidor.");
-            if (response.ok) {
-                status.innerHTML = "¡Gracias! Tu mensaje ha sido enviado.";
-                status.style.color = "green";
-                form.reset(); // Limpiamos los campos
-                console.log("ÉXITO TOTAL");
-            } else {
-                response.json().then(data => {
-                    if (Object.hasOwn(data, 'errors')) {
-                        status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-                    } else {
-                        status.innerHTML = "Hubo un problema al enviar.";
-                    }
-                    status.style.color = "red";
-                    console.error("Error del servidor:", data);
-                });
+        }
+        
+        // Display validation result
+        if (!isValid) {
+            field.classList.add('error');
+            showFieldError(field, errorMessage);
+        } else {
+            field.classList.remove('error');
+            removeFieldError(field);
+        }
+        
+        return isValid;
+    }
+    
+    function showFieldError(field, message) {
+        removeFieldError(field); 
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error';
+        errorDiv.textContent = message;
+        errorDiv.style.cssText = 'color: #ff4444; font-size: 0.85rem; margin-top: 0.5rem; animation: slideDown 0.3s ease;';
+        field.parentNode.appendChild(errorDiv);
+        field.style.borderColor = '#ff4444';
+    }
+    
+    function removeFieldError(field) {
+        const errorDiv = field.parentNode.querySelector('.field-error');
+        if (errorDiv) errorDiv.remove();
+        field.style.borderColor = '';
+    }
+
+    // Real-time validation listeners
+    formInputs.forEach(input => {
+        input.addEventListener('blur', function() { validateField(this); });
+        input.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                this.classList.remove('error');
+                removeFieldError(this);
             }
-        }).catch(error => {
-            status.innerHTML = "Error de conexión. Intenta de nuevo.";
-            status.style.color = "red";
-            console.error("Error de red:", error);
         });
     });
-});
+
+    // MAIN SUBMIT HANDLER
+    if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent default submit
+            
+            // 1. Run Validations
+            let isFormValid = true;
+            formInputs.forEach(field => {
+                if (!validateField(field)) {
+                    isFormValid = false;
+                }
+            });
+            
+            if (!isFormValid) {
+                showNotification('Por favor, corrige los errores en el formulario.', 'error');
+                return; // Stop execution if invalid
+            }
+
+            // 2. Prepare UI for sending
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            submitBtn.disabled = true;
+
+            // 3. Send to Formspree
+            const formData = new FormData(contactForm);
+
+            try {
+                const response = await fetch("https://formspree.io/f/myznyqbj", { // TU URL DE FORMSPREE
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Success
+                    showNotification('¡Mensaje enviado correctamente! Te contactaremos pronto.', 'success');
+                    contactForm.reset();
+                } else {
+                    // Formspree Error
+                    const data = await response.json();
+                    console.error("Error Formspree:", data);
+                    if (Object.hasOwn(data, 'errors')) {
+                        showNotification(data["errors"].map(error => error["message"]).join(", "), 'error');
+                    } else {
+                        showNotification('Hubo un problema al enviar el mensaje.', 'error');
+                    }
+                }
+            } catch (error) {
+                // Network Error
+                console.error("Error de red:", error);
+                showNotification('Error de conexión. Verifica tu internet.', 'error');
+            } finally {
+                // 4. Restore Button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
     // ========================================
     // SCROLL ANIMATIONS
     // ========================================
@@ -213,93 +356,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     // ========================================
-    // NOTIFICATION SYSTEM
-    // ========================================
-    
-    function showNotification(message, type = 'info') {
-        // Remove existing notifications
-        const existingNotifications = document.querySelectorAll('.notification');
-        existingNotifications.forEach(notification => notification.remove());
-        
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas ${getNotificationIcon(type)}"></i>
-                <span>${message}</span>
-                <button class="notification-close">&times;</button>
-            </div>
-        `;
-        
-        // Add styles
-        notification.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: ${type === 'success' ? '#00C851' : type === 'error' ? '#ff4444' : '#007bff'};
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            max-width: 400px;
-        `;
-        
-        const content = notification.querySelector('.notification-content');
-        content.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        `;
-        
-        const closeBtn = notification.querySelector('.notification-close');
-        closeBtn.style.cssText = `
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-left: auto;
-        `;
-        
-        // Add to DOM
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-        
-        // Close functionality
-        closeBtn.addEventListener('click', () => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        });
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }
-        }, 5000);
-    }
-    
-    function getNotificationIcon(type) {
-        switch (type) {
-            case 'success':
-                return 'fa-check-circle';
-            case 'error':
-                return 'fa-exclamation-circle';
-            default:
-                return 'fa-info-circle';
-        }
-    }
-    
-    // ========================================
     // DYNAMIC STATS COUNTER
     // ========================================
     
@@ -345,7 +401,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // SCROLL TO TOP BUTTON
     // ========================================
     
-    // Create scroll to top button
     const scrollTopBtn = document.createElement('button');
     scrollTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
     scrollTopBtn.className = 'scroll-top-btn';
@@ -369,7 +424,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
     document.body.appendChild(scrollTopBtn);
     
-    // Show/hide scroll to top button
     window.addEventListener('scroll', function() {
         if (window.scrollY > 300) {
             scrollTopBtn.style.opacity = '1';
@@ -380,7 +434,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-    // Scroll to top functionality
     scrollTopBtn.addEventListener('click', function() {
         window.scrollTo({
             top: 0,
@@ -406,7 +459,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     function openImageModal(src, title, description) {
-        // Create modal
         const modal = document.createElement('div');
         modal.className = 'image-modal';
         modal.innerHTML = `
@@ -422,84 +474,24 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         `;
         
-        // Add styles
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        `;
-        
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: flex; align-items: center; justify-content: center;';
         const backdrop = modal.querySelector('.modal-backdrop');
-        backdrop.style.cssText = `
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        `;
-        
+        backdrop.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; padding: 20px;';
         const content = modal.querySelector('.modal-content');
-        content.style.cssText = `
-            position: relative;
-            max-width: 90vw;
-            max-height: 90vh;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        `;
-        
+        content.style.cssText = 'position: relative; max-width: 90vw; max-height: 90vh; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);';
         const closeBtn = modal.querySelector('.modal-close');
-        closeBtn.style.cssText = `
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 10001;
-            font-size: 1.5rem;
-        `;
-        
+        closeBtn.style.cssText = 'position: absolute; top: 15px; right: 20px; background: rgba(0, 0, 0, 0.7); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10001; font-size: 1.5rem;';
         const img = modal.querySelector('img');
-        img.style.cssText = `
-            width: 100%;
-            max-height: 70vh;
-            object-fit: contain;
-            display: block;
-        `;
-        
+        img.style.cssText = 'width: 100%; max-height: 70vh; object-fit: contain; display: block;';
         const info = modal.querySelector('.modal-info');
-        info.style.cssText = `
-            padding: 1.5rem;
-            text-align: center;
-        `;
+        info.style.cssText = 'padding: 1.5rem; text-align: center;';
         
-        // Add to DOM
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
         
-        // Close functionality
         closeBtn.addEventListener('click', closeModal);
         backdrop.addEventListener('click', function(e) {
-            if (e.target === backdrop) {
-                closeModal();
-            }
+            if (e.target === backdrop) closeModal();
         });
         
         function closeModal() {
@@ -507,7 +499,6 @@ document.addEventListener("DOMContentLoaded", function() {
             document.body.style.overflow = '';
         }
         
-        // ESC key to close
         document.addEventListener('keydown', function escHandler(e) {
             if (e.key === 'Escape') {
                 closeModal();
@@ -548,14 +539,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // ========================================
     
     const hero = document.querySelector('.hero');
-    
     window.addEventListener('scroll', function() {
         const scrolled = window.pageYOffset;
         const rate = scrolled * -0.5;
-        
-        if (hero) {
-            hero.style.transform = `translateY(${rate}px)`;
-        }
+        if (hero) hero.style.transform = `translateY(${rate}px)`;
     });
     
     // ========================================
@@ -563,133 +550,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // ========================================
     
     window.addEventListener('load', function() {
-        // Remove any loading states
         document.body.classList.remove('loading');
-        
-        // Add loaded class for any CSS animations
         document.body.classList.add('loaded');
     });
-    
-    // ========================================
-    // FORM VALIDATION ENHANCEMENTS
-    // ========================================
-    
-    const formInputs = document.querySelectorAll('.contact-form input, .contact-form textarea, .contact-form select');
-    
-    formInputs.forEach(input => {
-        // Real-time validation feedback
-        input.addEventListener('blur', function() {
-            validateField(this);
-        });
-        
-        input.addEventListener('input', function() {
-            // Clear error state on input
-            if (this.classList.contains('error')) {
-                this.classList.remove('error');
-                removeFieldError(this);
-            }
-        });
-    });
-    
-    function validateField(field) {
-        const value = field.value.trim();
-        let isValid = true;
-        let errorMessage = '';
-        
-        // Check required fields
-        if (field.hasAttribute('required') && !value) {
-            isValid = false;
-            errorMessage = 'Este campo es obligatorio';
-        }
-        
-        // Email validation
-        if (field.type === 'email' && value) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-                isValid = false;
-                errorMessage = 'Ingrese un email válido';
-            }
-        }
-        
-        // Display validation result
-        if (!isValid) {
-            field.classList.add('error');
-            showFieldError(field, errorMessage);
-        } else {
-            field.classList.remove('error');
-            removeFieldError(field);
-        }
-        
-        return isValid;
-    }
-    
-    function showFieldError(field, message) {
-        removeFieldError(field); // Remove existing error
-        
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'field-error';
-        errorDiv.textContent = message;
-        errorDiv.style.cssText = `
-            color: #ff4444;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            animation: slideDown 0.3s ease;
-        `;
-        
-        field.parentNode.appendChild(errorDiv);
-        
-        // Add error styles to field
-        field.style.borderColor = '#ff4444';
-    }
-    
-    function removeFieldError(field) {
-        const errorDiv = field.parentNode.querySelector('.field-error');
-        if (errorDiv) {
-            errorDiv.remove();
-        }
-        field.style.borderColor = '';
-    }
-    
-    // Enhanced form submission validation
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            let isFormValid = true;
-            
-            // Validate all fields
-            formInputs.forEach(field => {
-                if (!validateField(field)) {
-                    isFormValid = false;
-                }
-            });
-            
-            if (isFormValid) {
-                // Proceed with form submission (existing code)
-                const formData = new FormData(contactForm);
-                const formObject = {};
-                formData.forEach((value, key) => {
-                    formObject[key] = value;
-                });
-                
-                const submitBtn = contactForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-                submitBtn.disabled = true;
-                
-                setTimeout(() => {
-                    showNotification('¡Mensaje enviado correctamente! Te contactaremos pronto.', 'success');
-                    contactForm.reset();
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    
-                    console.log('Form submitted:', formObject);
-                }, 2000);
-            } else {
-                showNotification('Por favor, corrige los errores en el formulario.', 'error');
-            }
-        });
-    }
     
     console.log('Maulen Riders website loaded successfully! 🚴‍♂️');
 });
