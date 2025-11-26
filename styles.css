@@ -1,7 +1,22 @@
 /* ========================================
    MAULEN RIDERS - AGRUPACIÓN DEPORTIVA
    ======================================== */
+/* Envuelve el iframe con una clase, por ejemplo 'iframe-responsive' */
+.iframe-responsive {
+    position: relative;
+    padding-bottom: 75%; /* Ajusta esta altura (relación de aspecto 4:3) */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+}
 
+.iframe-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 /* Variables CSS */
 :root {
     --primary-green: #00C851;
