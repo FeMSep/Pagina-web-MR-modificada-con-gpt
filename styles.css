@@ -480,10 +480,20 @@ p {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+    
+    /* 1. COLOR: Agregamos un color fijo por si falla la variable */
+    background-color: #28a745; 
+    /* Mantenemos tu gradiente, pero con el color fijo como respaldo */
+    background-image: linear-gradient(135deg, var(--primary-green, #28a745), var(--accent-green, #1e7e34));
+    
     border-radius: 4px;
-    transition: width 1s ease;
+    
+    /* 2. ANIMACIÓN: Esto hace que crezcan de izquierda a derecha */
+    transform-origin: left; /* El crecimiento empieza desde la izquierda */
+    animation: llenarBarra 1.5s ease-out forwards;
 }
+
+/* 3. Definimos el movimiento */
 
 .progress-text {
     color: var(--accent-green);
@@ -1279,4 +1289,12 @@ select:focus {
 .scroll-top-btn:focus {
   outline: 2px solid #00C851;
   outline-offset: 2px;
+}
+@keyframes llenarBarra {
+    from {
+        transform: scaleX(0); /* Empieza con tamaño 0 */
+    }
+    to {
+        transform: scaleX(1); /* Termina en el tamaño que pusiste en el HTML (70%, 60%, etc) */
+    }
 }
